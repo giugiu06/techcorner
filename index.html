@@ -19,13 +19,35 @@
             margin: 0;
             color: #1f2937; /* Gray-800 */
         }
-        /* Ensure the main container grows to fill available space */
+        /* Fixed Header Styles */
+        .fixed-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000; /* Ensure it stays on top of other content */
+            max-width: none; /* Remove max-width from header for full screen width */
+            border-bottom-left-radius: 1.5rem; /* rounded-b-3xl */
+            border-bottom-right-radius: 1.5rem; /* rounded-b-3xl */
+            border-top-left-radius: 0; /* No top radius for fixed header */
+            border-top-right-radius: 0; /* No top radius for fixed header */
+        }
+
+        /* Adjust main content padding to prevent it from being hidden behind the fixed header */
+        .main-content-padding {
+            padding-top: 140px; /* Adjust this value based on your header's height */
+            /* This value might need tweaking depending on actual header height across devices.
+               On smaller screens, the header might wrap, increasing its height.
+               Consider using JavaScript to dynamically calculate header height for perfect fit. */
+        }
+
+        /* Ensure the main content container grows to fill available space */
         .main-content-container {
             flex-grow: 1;
             display: flex;
             flex-direction: column;
             width: 100%;
-            max-width: 544px; /* max-w-md equivalent for card content */
+            max-width: 544px; /* max-w-md equivalent for card content, now applied to main content */
         }
 
         /* Specific styles for card elevation and rounded corners consistency */
@@ -34,12 +56,7 @@
             border-radius: 1.5rem; /* rounded-3xl */
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-xl */
         }
-        .header-card {
-            border-bottom-left-radius: 1.5rem; /* rounded-b-3xl */
-            border-bottom-right-radius: 1.5rem; /* rounded-b-3xl */
-            border-top-left-radius: 1.5rem; /* rounded-3xl */
-            border-top-right-radius: 1.5rem; /* rounded-3xl */
-        }
+
         .button-icon {
             margin-right: 0.5rem; /* mr-2 */
             display: none; /* hidden by default */
@@ -69,8 +86,8 @@
 </head>
 <body>
 
-    <!-- Header Section -->
-    <header class="custom-card header-card p-4 sm:p-6 md:p-4 w-full max-w-screen-xl flex flex-col md:flex-row items-center justify-between z-10">
+    <!-- Header Section - Now fixed at the top -->
+    <header class="custom-card fixed-header p-4 sm:p-6 md:p-4 flex flex-col md:flex-row items-center justify-between">
         <!-- Logo and App Title -->
         <div class="flex items-center space-x-3 mb-4 md:mb-0 md:mr-6">
             <div class="bg-blue-50 text-blue-600 rounded-full p-2 shadow-md">
@@ -143,7 +160,8 @@
     </header>
 
     <!-- Main content area - Forum Space taking full width and height -->
-    <main class="main-content-container p-4 sm:p-6 md:p-8">
+    <!-- Add padding-top to main content to account for the fixed header height -->
+    <main class="main-content-container p-4 sm:p-6 md:p-8 main-content-padding">
         <div class="custom-card w-full h-full flex flex-col items-center justify-start border-t-4 border-gray-200 p-6 sm:p-8 md:p-10">
             <h2 class="text-2xl font-bold text-gray-800 mb-4">Forum Space</h2>
             <p class="text-gray-600 text-center mb-6">This is the space where forum content will be displayed. <br/> You can add posts, discussions, and other elements here.</p>
@@ -215,6 +233,23 @@
             showMessage('Our Server Clicked!');
             console.log('Our Server Clicked');
         });
+
+        // Dynamic padding adjustment for main content based on header height
+        function adjustMainContentPadding() {
+            const header = document.querySelector('header');
+            const mainContent = document.querySelector('main');
+            if (header && mainContent) {
+                // Get the actual height of the header
+                const headerHeight = header.offsetHeight;
+                // Add some extra margin if needed for aesthetic
+                const extraMargin = 16; // Example: 16px (1rem)
+                mainContent.style.paddingTop = `${headerHeight + extraMargin}px`;
+            }
+        }
+
+        // Adjust padding on load and on window resize
+        window.addEventListener('load', adjustMainContentPadding);
+        window.addEventListener('resize', adjustMainContentPadding);
     </script>
 </body>
 </html>
