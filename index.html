@@ -6,83 +6,12 @@
     <title>TechCorner Web App</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        /* Custom Font - Inter */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6; /* Gray-100 */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            color: #1f2937; /* Gray-800 */
-        }
-        /* Fixed Header Styles */
-        .fixed-header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000; /* Ensure it stays on top of other content */
-            max-width: none; /* Remove max-width from header for full screen width */
-            border-bottom-left-radius: 1.5rem; /* rounded-b-3xl */
-            border-bottom-right-radius: 1.5rem; /* rounded-b-3xl */
-            border-top-left-radius: 0; /* No top radius for fixed header */
-            border-top-right-radius: 0; /* No top radius for fixed header */
-        }
-
-        /* Adjust main content padding to prevent it from being hidden behind the fixed header */
-        .main-content-padding {
-            padding-top: 140px; /* Adjust this value based on your header's height */
-            /* This value might need tweaking depending on actual header height across devices.
-               On smaller screens, the header might wrap, increasing its height.
-               Consider using JavaScript to dynamically calculate header height for perfect fit. */
-        }
-
-        /* Ensure the main content container grows to fill available space */
-        .main-content-container {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-            max-width: 544px; /* max-w-md equivalent for card content, now applied to main content */
-        }
-
-        /* Specific styles for card elevation and rounded corners consistency */
-        .custom-card {
-            background-color: white;
-            border-radius: 1.5rem; /* rounded-3xl */
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-xl */
-        }
-
-        .button-icon {
-            margin-right: 0.5rem; /* mr-2 */
-            display: none; /* hidden by default */
-        }
-        @media (min-width: 640px) { /* sm:breakpoint */
-            .button-icon {
-                display: block; /* sm:block */
-            }
-        }
-
-        /* Custom alert/message box */
-        #messageBox {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: #333;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-size: 1rem;
-            z-index: 1000;
-            opacity: 0;
-            transition: opacity 0.3s ease-in-out;
-        }
-    </style>
+    <!-- Custom Font - Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- reCAPTCHA v2 API (necessary for email/password signup and phone auth) -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <!-- External Stylesheet -->
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -92,164 +21,81 @@
         <div class="flex items-center space-x-3 mb-4 md:mb-0 md:mr-6">
             <div class="bg-blue-50 text-blue-600 rounded-full p-2 shadow-md">
                 <!-- SVG Icon for Server -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-server">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-server">
                     <rect x="2" y="2" width="20" height="8" rx="2" ry="2"/>
                     <rect x="2" y="14" width="20" height="8" rx="2" ry="2"/>
                     <path d="M7 6h0"/>
                     <path d="M7 18h0"/>
                 </svg>
             </div>
-            <h1 class="text-2xl font-bold text-gray-800">TechCorner</h1>
+            <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">TechCorner</h1>
         </div>
 
-        <!-- Navigation Buttons - Always visible, horizontal layout, responsive wrapping -->
+        <!-- Navigation Menu -->
         <nav class="w-full md:w-auto">
-            <ul class="flex flex-wrap justify-center md:justify-end gap-3 sm:gap-4">
+            <ul class="flex flex-wrap justify-center md:justify-end gap-2 sm:gap-4">
                 <li>
-                    <button id="btnNews" class="flex items-center justify-center bg-blue-600 text-white py-2 px-4 rounded-lg shadow-md hover:bg-blue-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-300 text-sm sm:text-base whitespace-nowrap">
-                        <!-- SVG Icon for Newspaper -->
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-newspaper button-icon">
-                            <path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2zm0 0a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v16a2 2 0 0 0 2 2H4z"/>
-                            <path d="M8 7h4"/>
-                            <path d="M8 12h8"/>
-                            <path d="M12 17h4"/>
+                    <button id="promotionWallNav" class="nav-button flex items-center justify-center bg-blue-500 text-white py-2 px-4 rounded-lg shadow-md hover:bg-blue-600 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-300 text-sm sm:text-base whitespace-nowrap" data-desktop-text="Promotion Wall">
+                        <!-- SVG Icon for Home -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-megaphone button-icon">
+                            <path d="m3 11 18-8v11l-18 8z"/>
+                            <path d="M7 10v4"/>
                         </svg>
-                        <span class="font-semibold">NEWS</span>
+                        <span class="font-semibold nav-text">Promotion Wall</span>
                     </button>
                 </li>
                 <li>
-                    <button id="btnPromote" class="flex items-center justify-center bg-purple-600 text-white py-2 px-4 rounded-lg shadow-md hover:bg-purple-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-purple-300 text-sm sm:text-base whitespace-nowrap">
-                        <!-- SVG Icon for Lightbulb -->
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-lightbulb button-icon">
-                            <path d="M15 14v1a3 3 0 0 1-3 3h0a3 3 0 0 1-3-3v-1"/>
-                            <path d="M14 8a6 6 0 0 0-6 6v1c0 2.21 1.79 4 4 4h0c2.21 0 4-1.79 4-4v-1a6 6 0 0 0-6-6z"/>
-                            <path d="M12 4v.5"/>
-                            <path d="M12 21.5V22"/>
-                            <path d="M18.5 7.5l-.95.95"/>
-                            <path d="M5.5 7.5l.95.95"/>
-                            <path d="M19 12h.5"/>
-                            <path d="M4.5 12h-.5"/>
+                    <button id="promoteYourselfNav" class="nav-button flex items-center justify-center bg-green-500 text-white py-2 px-4 rounded-lg shadow-md hover:bg-green-600 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-green-300 text-sm sm:text-base whitespace-nowrap" data-desktop-text="Promote Yourself">
+                        <!-- SVG Icon for Promote -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sparkles button-icon">
+                            <path d="M9.998 12 7 9l5-7 5 7-2.998 3L17 15l-5 7-5-7 2.998-3z"/>
                         </svg>
-                        <span class="font-semibold text-center">PROMOTE YOURSELF</span>
+                        <span class="font-semibold nav-text">Promote Yourself</span>
                     </button>
                 </li>
                 <li>
-                    <button id="btnAbout" class="flex items-center justify-center bg-green-600 text-white py-2 px-4 rounded-lg shadow-md hover:bg-green-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-green-300 text-sm sm:text-base whitespace-nowrap">
-                        <!-- SVG Icon for User -->
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user button-icon">
-                            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+                    <button id="communityNav" class="nav-button flex items-center justify-center bg-purple-500 text-white py-2 px-4 rounded-lg shadow-md hover:bg-purple-600 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-purple-300 text-sm sm:text-base whitespace-nowrap" data-desktop-text="Community">
+                        <!-- SVG Icon for Community -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-users button-icon">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                             <circle cx="12" cy="7" r="4"/>
+                            <path d="M22 21v-2a4 4 0 0 0-3-3.87M6 15V13a4 4 0 0 1 3-3.87"/>
                         </svg>
-                        <span class="font-semibold">ABOUT US</span>
+                        <span class="font-semibold nav-text">Community</span>
                     </button>
                 </li>
                 <li>
-                    <button id="btnServer" class="flex items-center justify-center bg-red-600 text-white py-2 px-4 rounded-lg shadow-md hover:bg-red-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-red-300 text-sm sm:text-base whitespace-nowrap">
-                        <!-- SVG Icon for Server (duplicate for consistency, though it's already the logo) -->
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-server button-icon">
-                            <rect x="2" y="2" width="20" height="8" rx="2" ry="2"/>
-                            <rect x="2" y="14" width="20" height="8" rx="2" ry="2"/>
-                            <path d="M7 6h0"/>
-                            <path d="M7 18h0"/>
+                    <button id="profileNav" class="nav-button flex items-center justify-center bg-yellow-500 text-white py-2 px-4 rounded-lg shadow-md hover:bg-yellow-600 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-yellow-300 text-sm sm:text-base whitespace-nowrap" data-desktop-text="Profile">
+                        <!-- SVG Icon for Profile -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-user button-icon">
+                            <circle cx="12" cy="12" r="10"/>
+                            <circle cx="12" cy="10" r="3"/>
+                            <path d="M7 20.662V19a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v1.662"/>
                         </svg>
-                        <span class="font-semibold">OUR SERVER</span>
+                        <span class="font-semibold nav-text">Profile</span>
+                    </button>
+                </li>
+                <li>
+                    <button id="authNav" class="nav-button flex items-center justify-center bg-red-600 text-white py-2 px-4 rounded-lg shadow-md hover:bg-red-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-red-300 text-sm sm:text-base whitespace-nowrap">
+                        <!-- SVG Icon for Log In/Out (using a generic user icon) -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-log-in button-icon">
+                            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+                            <polyline points="10 17 15 12 10 7"/>
+                            <line x1="15" x2="3" y1="12" y2="12"/>
+                        </svg>
+                        <span class="font-semibold nav-text">Log In</span>
                     </button>
                 </li>
             </ul>
         </nav>
     </header>
 
-    <!-- Main content area - Forum Space taking full width and height -->
-    <!-- Add padding-top to main content to account for the fixed header height -->
-    <main class="main-content-container p-4 sm:p-6 md:p-8 main-content-padding">
-        <div class="custom-card w-full h-full flex flex-col items-center justify-start border-t-4 border-gray-200 p-6 sm:p-8 md:p-10">
-            <h2 class="text-2xl font-bold text-gray-800 mb-4">Forum Space</h2>
-            <p class="text-gray-600 text-center mb-6">This is the space where forum content will be displayed. <br/> You can add posts, discussions, and other elements here.</p>
-            
-            <!-- Placeholder for forum content, with vertical scroll if content overflows -->
-            <div class="w-full text-left flex-grow overflow-y-auto">
-                <div class="bg-gray-100 p-4 rounded-lg mb-3 shadow-sm">
-                    <p class="font-semibold text-gray-700">Recent Discussion 1</p>
-                    <p class="text-sm text-gray-500">A short summary of the post. This is a longer description to demonstrate how the text wraps and occupies more space within the forum item. The goal is to make sure the content area is fully utilized.</p>
-                </div>
-                <div class="bg-gray-100 p-4 rounded-lg mb-3 shadow-sm">
-                    <p class="font-semibold text-gray-700">Recent Discussion 2</p>
-                    <p class="text-sm text-gray-500">Another short summary. This content will also expand to show how the forum space adjusts. It simulates more realistic forum post content to ensure the layout is robust.</p>
-                </div>
-                <div class="bg-gray-100 p-4 rounded-lg mb-3 shadow-sm">
-                    <p class="font-semibold text-gray-700">Recent Discussion 3</p>
-                    <p class="text-sm text-gray-500">A third discussion example. More text to fill out the space and demonstrate scrolling within the forum area if content exceeds the viewport height. This ensures the design holds up with dynamic content.</p>
-                </div>
-                <div class="bg-gray-100 p-4 rounded-lg mb-3 shadow-sm">
-                    <p class="font-semibold text-gray-700">Recent Discussion 4</p>
-                    <p class="text-sm text-gray-500">Fourth discussion for testing purposes. This helps visualize how multiple forum items will stack up and interact with the overall layout of the application, ensuring a smooth user experience even with extensive content.</p>
-                </div>
-                <div class="bg-gray-100 p-4 rounded-lg mb-3 shadow-sm">
-                    <p class="font-semibold text-gray-700">Recent Discussion 5</p>
-                    <p class="text-sm text-gray-500">Fifth discussion to ensure vertical scrolling is correctly implemented. When there's too much content to fit the screen, the scrollbar should appear naturally, allowing users to browse all discussions efficiently without breaking the layout.</p>
-                </div>
-                <!-- Add more discussion items here as needed -->
-            </div>
-        </div>
+    <!-- Main content area - Content will be dynamically loaded here by app.js -->
+    <main id="mainContentArea" class="main-content-container p-4 sm:p-6 md:p-8 main-content-padding">
+        <!-- Dynamic content will be rendered here -->
     </main>
 
-    <!-- Simple message box for toasts -->
-    <div id="messageBox" role="alert"></div>
-
-    <script>
-        // Function to show a custom message (like a Toast)
-        function showMessage(message) {
-            const messageBox = document.getElementById('messageBox');
-            messageBox.textContent = message;
-            messageBox.style.opacity = '1';
-            setTimeout(() => {
-                messageBox.style.opacity = '0';
-            }, 2000); // Hide after 2 seconds
-        }
-
-        // Get references to the buttons
-        const btnNews = document.getElementById('btnNews');
-        const btnPromote = document.getElementById('btnPromote');
-        const btnAbout = document.getElementById('btnAbout');
-        const btnServer = document.getElementById('btnServer');
-
-        // Add click event listeners
-        btnNews.addEventListener('click', () => {
-            showMessage('News Clicked!');
-            console.log('News Clicked');
-        });
-
-        btnPromote.addEventListener('click', () => {
-            showMessage('Promote Yourself Clicked!');
-            console.log('Promote Yourself Clicked');
-        });
-
-        btnAbout.addEventListener('click', () => {
-            showMessage('About Us Clicked!');
-            console.log('About Us Clicked');
-        });
-
-        btnServer.addEventListener('click', () => {
-            showMessage('Our Server Clicked!');
-            console.log('Our Server Clicked');
-        });
-
-        // Dynamic padding adjustment for main content based on header height
-        function adjustMainContentPadding() {
-            const header = document.querySelector('header');
-            const mainContent = document.querySelector('main');
-            if (header && mainContent) {
-                // Get the actual height of the header
-                const headerHeight = header.offsetHeight;
-                // Add some extra margin if needed for aesthetic
-                const extraMargin = 16; // Example: 16px (1rem)
-                mainContent.style.paddingTop = `${headerHeight + extraMargin}px`;
-            }
-        }
-
-        // Adjust padding on load and on window resize
-        window.addEventListener('load', adjustMainContentPadding);
-        window.addEventListener('resize', adjustMainContentPadding);
-    </script>
+    <!-- App JavaScript -->
+    <script type="module" src="app.js"></script>
 </body>
 </html>
