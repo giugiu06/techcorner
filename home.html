@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechCorner - Home</title>
+    <link rel="icon" href="icona.png" type="image/png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5; /* Light background like Google */
+        }
+        .header-bg {
+            background-color: #ffffff; /* White background for header */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Light shadow */
+        }
+        .btn-primary {
+            background-color: #1a73e8; /* Google Blue */
+            color: white;
+            padding: 10px 20px;
+            border-radius: 9999px; /* Rounded corners */
+            transition: background-color 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: #1565c0; /* Darker blue on hover */
+        }
+        .card {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            padding: 24px;
+        }
+        .navbar-link {
+            color: #5f6368; /* Text gray */
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 9999px;
+            transition: background-color 0.3s ease;
+        }
+        .navbar-link:hover {
+            background-color: #e8f0fe; /* Light blue background on hover */
+            color: #1a73e8; /* Blue text */
+        }
+    </style>
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Firebase Configuration (DO NOT CHANGE - Canvas will provide this at runtime)
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Handle initial authentication state and custom token
+        onAuthStateChanged(auth, async (user) => {
+            const loginButton = document.getElementById('loginButton');
+            const registerButton = document.getElementById('registerButton');
+            const logoutButton = document.getElementById('logoutButton');
+            const welcomeMessage = document.getElementById('welcomeMessage');
+
+            if (user) {
+                // User is signed in
+                console.log("User logged in:", user.email || user.uid);
+                loginButton.style.display = 'none';
+                registerButton.style.display = 'none';
+                logoutButton.style.display = 'block';
+                welcomeMessage.textContent = `Welcome, ${user.email || 'User'}!`;
+                welcomeMessage.style.display = 'block';
+
+            } else {
+                // No user is signed in
+                console.log("No user signed in.");
+                loginButton.style.display = 'block';
+                registerButton.style.display = 'block';
+                logoutButton.style.display = 'none';
+                welcomeMessage.style.display = 'none';
+
+                // Attempt to sign in with custom token if available
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    try {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                        console.log("Signed in with custom token successfully.");
+                    } catch (error) {
+                        console.error("Error signing in with custom token:", error.message);
+                    }
+                }
+            }
+        });
+
+        window.logoutUser = async function() {
+            try {
+                await signOut(auth);
+                console.log("User logged out.");
+                window.location.href = "home.html"; // Redirect to home after logout
+            } catch (error) {
+                console.error("Error logging out:", error.message);
+            }
+        };
+    </script>
+</head>
+<body class="flex flex-col min-h-screen">
+    <!-- Header -->
+    <header class="header-bg py-4 sticky top-0 z-50">
+        <div class="container mx-auto px-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <img src="icona.png" alt="TechCorner Icon" class="h-8 w-8 rounded-full">
+                <h1 class="text-2xl font-bold text-gray-800">TechCorner</h1>
+            </div>
+            <nav class="hidden md:flex space-x-6">
+                <a href="home.html" class="navbar-link">Home</a>
+                <a href="wall-of-promotions.html" class="navbar-link">Wall of Promotions</a>
+                <a href="promote-yourself.html" class="navbar-link">Promote Yourself</a>
+                <a href="user.html" class="navbar-link">Users</a>
+            </nav>
+            <div class="flex items-center space-x-4">
+                <span id="welcomeMessage" class="text-gray-700 font-medium hidden"></span>
+                <a href="login.html" id="loginButton" class="btn-primary">Login</a>
+                <a href="register.html" id="registerButton" class="btn-primary hidden md:block">Register</a>
+                <button onclick="logoutUser()" id="logoutButton" class="btn-primary bg-red-500 hover:bg-red-600 hidden">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <main class="flex-grow container mx-auto px-4 py-16 text-center">
+        <div class="max-w-3xl mx-auto">
+            <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight">
+                Your Corner for <span class="text-blue-600">Technology</span> Discussions
+            </h2>
+            <p class="text-lg md:text-xl text-gray-600 mb-10">
+                Join our community of technology enthusiasts to share ideas, discover the latest news, and connect with other users.
+            </p>
+            <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
+                <a href="register.html" class="btn-primary">Get Started Now</a>
+                <a href="wall-of-promotions.html" class="btn-primary bg-gray-200 text-gray-800 hover:bg-gray-300">Explore the Wall</a>
+            </div>
+        </div>
+        <div class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="card">
+                <h3 class="text-xl font-semibold text-gray-800 mb-3">Engaging Discussions</h3>
+                <p class="text-gray-600">Participate in stimulating conversations about AI, development, hardware, and much more.</p>
+            </div>
+            <div class="card">
+                <h3 class="text-xl font-semibold text-gray-800 mb-3">Connect with Experts</h3>
+                <p class="text-gray-600">Meet and interact with other tech enthusiasts and professionals in the industry.</p>
+            </div>
+            <div class="card">
+                <h3 class="text-xl font-semibold text-gray-800 mb-3">Stay Updated</h3>
+                <p class="text-gray-600">Discover the latest trends and promotions in the world of technology.</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-16">
+        <div class="container mx-auto px-4 text-center">
+            <p>&copy; 2025 TechCorner. All rights reserved.</p>
+            <div class="flex justify-center space-x-6 mt-4">
+                <a href="#" class="text-gray-400 hover:text-white">Privacy Policy</a>
+                <a href="#" class="text-gray-400 hover:text-white">Terms of Service</a>
+                <a href="#" class="text-gray-400 hover:text-white">Contact</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
