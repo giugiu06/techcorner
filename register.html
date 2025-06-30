@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechCorner - Register</title>
+    <link rel="icon" href="icona.png" type="image/png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5; /* Light background like Google */
+        }
+        .header-bg {
+            background-color: #ffffff; /* White background for header */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Light shadow */
+        }
+        .btn-primary {
+            background-color: #1a73e8; /* Google Blue */
+            color: white;
+            padding: 10px 20px;
+            border-radius: 9999px; /* Rounded corners */
+            transition: background-color 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: #1565c0; /* Darker blue on hover */
+        }
+        .input-field {
+            border: 1px solid #dadce0; /* Google-like input border */
+            border-radius: 8px;
+            padding: 12px 16px;
+            width: 100%;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .input-field:focus {
+            outline: none;
+            border-color: #1a73e8; /* Blue border on focus */
+            box-shadow: 0 0 0 1px #1a73e8; /* Blue shadow on focus */
+        }
+        .card-form {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            padding: 40px;
+            max-width: 400px;
+            width: 90%;
+        }
+        .navbar-link {
+            color: #5f6368; /* Text gray */
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 9999px;
+            transition: background-color 0.3s ease;
+        }
+        .navbar-link:hover {
+            background-color: #e8f0fe; /* Light blue background on hover */
+            color: #1a73e8; /* Blue text */
+        }
+        .message-box {
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: 500;
+        }
+        .message-box.success {
+            background-color: #e6ffe6;
+            color: #1a73e8;
+            border: 1px solid #a8e6a8;
+        }
+        .message-box.error {
+            background-color: #ffe6e6;
+            color: #ea4335;
+            border: 1px solid #e6a8a8;
+        }
+    </style>
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Firebase Configuration (DO NOT CHANGE - Canvas will provide this at runtime)
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Function to display messages
+        function showMessage(message, type) {
+            const messageBox = document.getElementById('message-box');
+            messageBox.textContent = message;
+            messageBox.className = `message-box ${type}`;
+            messageBox.style.display = 'block';
+        }
+
+        // Handle initial authentication state and custom token
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                // User is signed in. You might want to redirect them or update UI.
+                console.log("User already signed in:", user.uid);
+                // Optionally redirect to home or user profile page if already logged in
+                // window.location.href = "home.html";
+            } else {
+                console.log("No user signed in.");
+                // Attempt to sign in with custom token if available
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    try {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                        console.log("Signed in with custom token successfully.");
+                    } catch (error) {
+                        console.error("Error signing in with custom token:", error.message);
+                        showMessage(`Authentication failed: ${error.message}`, 'error');
+                    }
+                }
+            }
+        });
+
+        // Registration Function
+        window.registerUser = async function() {
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+
+            if (!username || !email || !password || !confirmPassword) {
+                showMessage("Please fill in all fields.", "error");
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                showMessage("Passwords do not match.", "error");
+                return;
+            }
+
+            if (password.length < 6) {
+                showMessage("Password should be at least 6 characters.", "error");
+                return;
+            }
+
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+                console.log("User registered:", user.uid);
+
+                // Save user data to Firestore (optional, but good for profiles)
+                // Use the private data path for user specific data
+                const userId = user.uid;
+                const userDocRef = doc(db, `artifacts/${appId}/users/${userId}/profile`, "data");
+                await setDoc(userDocRef, {
+                    uid: userId,
+                    username: username,
+                    email: email,
+                    registrationDate: new Date().toISOString()
+                });
+
+                showMessage("Registration successful! Redirecting to login...", "success");
+                setTimeout(() => {
+                    window.location.href = "login.html"; // Redirect to login after successful registration
+                }, 2000);
+
+            } catch (error) {
+                console.error("Registration error:", error.code, error.message);
+                let errorMessage = "Registration failed. Please try again.";
+                if (error.code === 'auth/email-already-in-use') {
+                    errorMessage = 'The email address is already in use by another account.';
+                } else if (error.code === 'auth/invalid-email') {
+                    errorMessage = 'The email address is not valid.';
+                } else if (error.code === 'auth/weak-password') {
+                    errorMessage = 'The password is too weak. Please use a stronger password.';
+                }
+                showMessage(errorMessage, "error");
+            }
+        };
+    </script>
+</head>
+<body class="flex flex-col min-h-screen">
+    <!-- Header -->
+    <header class="header-bg py-4 sticky top-0 z-50">
+        <div class="container mx-auto px-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <img src="icona.png" alt="TechCorner Icon" class="h-8 w-8 rounded-full">
+                <h1 class="text-2xl font-bold text-gray-800">TechCorner</h1>
+            </div>
+            <nav class="hidden md:flex space-x-6">
+                <a href="home.html" class="navbar-link">Home</a>
+                <a href="wall-of-promotions.html" class="navbar-link">Wall of Promotions</a>
+                <a href="promote-yourself.html" class="navbar-link">Promote Yourself</a>
+                <a href="user.html" class="navbar-link">Users</a>
+            </nav>
+            <div class="flex items-center space-x-4">
+                <a href="login.html" class="btn-primary">Login</a>
+                <a href="register.html" class="btn-primary hidden md:block">Register</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Register Form Section -->
+    <main class="flex-grow flex items-center justify-center py-16 px-4">
+        <div class="card-form text-center">
+            <h2 class="text-3xl font-bold text-gray-900 mb-6">Register for TechCorner</h2>
+            <p class="text-gray-600 mb-8">Create your account to join our community.</p>
+
+            <div id="message-box" class="message-box" style="display:none;"></div>
+
+            <form id="registerForm" class="space-y-6" onsubmit="event.preventDefault(); registerUser();">
+                <div>
+                    <input type="text" id="username" name="username" placeholder="Username" class="input-field" required>
+                </div>
+                <div>
+                    <input type="email" id="email" name="email" placeholder="Email" class="input-field" required>
+                </div>
+                <div>
+                    <input type="password" id="password" name="password" placeholder="Password" class="input-field" required>
+                </div>
+                <div>
+                    <input type="password" id="confirm-password" name="confirm-password" placeholder="Confirm Password" class="input-field" required>
+                </div>
+                <button type="submit" class="btn-primary w-full py-3 text-lg font-semibold">Register</button>
+            </form>
+
+            <div class="mt-8 text-sm">
+                <p class="text-gray-600">Already have an account? <a href="login.html" class="text-blue-600 hover:underline">Login here</a>.</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-16">
+        <div class="container mx-auto px-4 text-center">
+            <p>&copy; 2025 TechCorner. All rights reserved.</p>
+            <div class="flex justify-center space-x-6 mt-4">
+                <a href="#" class="text-gray-400 hover:text-white">Privacy Policy</a>
+                <a href="#" class="text-gray-400 hover:text-white">Terms of Service</a>
+                <a href="#" class="text-gray-400 hover:text-white">Contact</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
